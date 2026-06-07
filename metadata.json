@@ -1,0 +1,6 @@
+{
+  "name": "SevaSetu NGO Research & Data Collector",
+  "description": "An interactive workspace to research, collect, visualize, and export data on Indian NGOs across major social sectors, integrated with Gemini AI assistance and portfolio tracker.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
