@@ -59,11 +59,32 @@ export default function AiAssistant({ onImportNgo, existingNgoNames }: AiAssista
       });
 
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'The research assistant failed to respond. Please verify your internet connection or try again later.');
+        let errMsg = 'The research assistant failed to respond. Please verify your internet connection or try again later.';
+        try {
+          const text = await response.text();
+          try {
+            const errorData = JSON.parse(text);
+            errMsg = errorData.error || errMsg;
+          } catch {
+            if (response.status === 503) {
+              errMsg = 'The AI server is starting up or key is not configured. Please supply a valid GEMINI_API_KEY in your settings.';
+            } else {
+              errMsg = `Server error (${response.status}): ${text.substring(0, 150).replace(/<[^>]*>/g, '')}...`;
+            }
+          }
+        } catch {
+          // Fallback
+        }
+        throw new Error(errMsg);
       }
 
-      const data = await response.json();
+      let data;
+      try {
+        const text = await response.text();
+        data = JSON.parse(text);
+      } catch (err) {
+        throw new Error('Received an invalid non-JSON response from the server.');
+      }
 
       if (activeTab === 'scout') {
         if (data.items && Array.isArray(data.items)) {
